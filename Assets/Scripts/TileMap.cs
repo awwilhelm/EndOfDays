@@ -123,31 +123,100 @@ public class TileMap : MonoBehaviour
         List<Room> rooms = new List<Room>();
         for(int i = 0; i< roomCount; i++)
         {
-            int randX = Random.Range(0, size_x-3);
-            int randY = Random.Range(4, size_z);
+            int randX;
+            int randY;
             //int thisRSI = Random.Range(0, roomSizes.Count - 1);
+
+            if(i != 0)
+            {
+                int offsetPos = 100;
+                randX = Random.Range(-50, 50);
+                randY = Random.Range(-50, 50);
+                if(randX <= 0)
+                {
+                    randX -= offsetPos;
+                } else
+                {
+                    randX += offsetPos;
+                }
+
+                if (randY <= 0)
+                {
+                    randY -= offsetPos;
+                }
+                else
+                {
+                    randY += offsetPos;
+                }
+            } else
+            {
+                randX = size_x / 2;
+                randY = size_z / 2;
+            }
 
             Room tempRoom;
             int w, h;
-            if (size_x - randX > 7 )
-            {
-                w = Random.Range(2, 7);
-            } else
-            {
-               w = Random.Range(2, size_x - randX - 1);
-            }
-            if (randY > 7)
-            {
+            //if (size_x - randX > 7 )
+            //{
+            //    w = Random.Range(2, 7);
+            //} else
+            //{
+               w = Random.Range(2, 7);
+            //}
+            //if (randY > 7)
+            //{
+            //    h = Random.Range(2, 7);
+            //} else
+            //{
                 h = Random.Range(2, 7);
-            } else
+            //}
+            
+            
+
+            if (i != 0)
             {
-                h = Random.Range(2, randY);
+                int lowestIndex = 0;
+                int lowestVal = (int)Mathf.Sqrt(Mathf.Pow(Mathf.Abs(rooms[lowestIndex].x1 - randX), 2) + Mathf.Pow(Mathf.Abs(rooms[lowestIndex].y1 - randY), 2));
+                for (int j = 1; j < i; j++)
+                {
+                    int distance = (int)Mathf.Sqrt(Mathf.Pow(Mathf.Abs(rooms[j].x1 - randX), 2) + Mathf.Pow(Mathf.Abs(rooms[j].y1 - randY), 2));
+                    if (distance < lowestVal)
+                    {
+                        lowestIndex = j;
+                        lowestVal = distance;
+                    }
+                }
+
+                if (randX > rooms[lowestIndex].x1) // right
+                {
+                    randX = rooms[lowestIndex].x2+1;
+                    randY = rooms[lowestIndex].y1;
+                    print("right");
+                }
+                else if (randX < rooms[lowestIndex].x1) // left
+                {
+                    randX = rooms[lowestIndex].x1 - w - 1;
+                    randY = rooms[lowestIndex].y1;
+                    print("left");
+                }
+                else if (randY > rooms[lowestIndex].y1) // up
+                {
+                    randX = rooms[lowestIndex].x1;
+                    randY = rooms[lowestIndex].y1 + h;
+                    print("up");
+                }
+                else if (randY < rooms[lowestIndex].y1) // down
+                {
+                    randX = rooms[lowestIndex].x1;
+                    randY = rooms[lowestIndex].y2;
+                    print("down");
+                }
             }
 
             tempRoom.x1 = randX;
             tempRoom.y1 = randY;
             tempRoom.x2 = w + randX + 1;
-            tempRoom.y2 = randY- h - 1;
+            tempRoom.y2 = randY - h - 1;
             tempRoom.width = w;
             tempRoom.height = h;
 
@@ -155,57 +224,60 @@ public class TileMap : MonoBehaviour
 
             
         }
-        int timeout = 7;
-        for(int i = 0; i< timeout; i++)
-        {
-            if (rooms.Count > 1)
-            {
-                for(int p = 0; p < rooms.Count-1; p++)
-                for (int k = 0; k < rooms.Count - 1; k++)
-                {
-                    Room room1, room2 = new Room();
-                    room1 = rooms[k];
-                    room2 = rooms[p];
-                    IntersectVal whereIntersect = intersect(room1, room2);
-                    if (whereIntersect != IntersectVal.none  && p != k)
-                    {
-                        if (whereIntersect == IntersectVal.left)
-                        {
-                            print("moved left: " + room2.x1 + " " + room2.x2);
-                            int moveLeft = room2.x2 - room1.x1 + 1;
-                            room2.x1 -= moveLeft;
-                            room2.x2 -= moveLeft;
-                            print("Update: " + room2.x1 + " " + room2.x2);
-                        }
-                        else if (whereIntersect == IntersectVal.right)
-                        {
-                            print("moved right: " + room2.x1 + " " + room2.x2);
-                            int moveRight = room1.x2 - room2.x1 + 1;
-                            room2.x1 += moveRight;
-                            room2.x2 += moveRight;
-                            print("Update: " + room2.x1 + " " + room2.x2);
-                        }
-                        else if (whereIntersect == IntersectVal.up)
-                        {
-                            print("moved up: " + room2.y1 + " " + room2.y2);
-                            int moveUp = room1.y1 - room2.y2 + 1;
-                            room2.y1 += moveUp;
-                            room2.y2 += moveUp;
-                            print("Update: " + room2.y1 + " " + room2.y2);
-                        }
-                        else if (whereIntersect == IntersectVal.down)
-                        {
-                            print("moved down: " + room2.y1 + " " + room2.y2);
-                            int moveDown = room2.y1 - room1.y2 + 1;
-                            room2.y1 -= moveDown;
-                            room2.y2 -= moveDown;
-                            print("Update: " + room2.y1 + " " + room2.y2);
-                        }
-                        rooms[p] = room2;
-                    }
-                }
-            }
-        }
+        
+
+
+        //int timeout = 7;
+        //for(int i = 0; i< timeout; i++)
+        //{
+        //    if (rooms.Count > 1)
+        //    {
+        //        for(int p = 0; p < rooms.Count-1; p++)
+        //        for (int k = 0; k < rooms.Count - 1; k++)
+        //        {
+        //            Room room1, room2 = new Room();
+        //            room1 = rooms[k];
+        //            room2 = rooms[p];
+        //            IntersectVal whereIntersect = intersect(room1, room2);
+        //            if (whereIntersect != IntersectVal.none  && p != k)
+        //            {
+        //                if (whereIntersect == IntersectVal.left)
+        //                {
+        //                    print("moved left: " + room2.x1 + " " + room2.x2);
+        //                    int moveLeft = room2.x2 - room1.x1 + 1;
+        //                    room2.x1 -= moveLeft;
+        //                    room2.x2 -= moveLeft;
+        //                    print("Update: " + room2.x1 + " " + room2.x2);
+        //                }
+        //                else if (whereIntersect == IntersectVal.right)
+        //                {
+        //                    print("moved right: " + room2.x1 + " " + room2.x2);
+        //                    int moveRight = room1.x2 - room2.x1 + 1;
+        //                    room2.x1 += moveRight;
+        //                    room2.x2 += moveRight;
+        //                    print("Update: " + room2.x1 + " " + room2.x2);
+        //                }
+        //                else if (whereIntersect == IntersectVal.up)
+        //                {
+        //                    print("moved up: " + room2.y1 + " " + room2.y2);
+        //                    int moveUp = room1.y1 - room2.y2 + 1;
+        //                    room2.y1 += moveUp;
+        //                    room2.y2 += moveUp;
+        //                    print("Update: " + room2.y1 + " " + room2.y2);
+        //                }
+        //                else if (whereIntersect == IntersectVal.down)
+        //                {
+        //                    print("moved down: " + room2.y1 + " " + room2.y2);
+        //                    int moveDown = room2.y1 - room1.y2 + 1;
+        //                    room2.y1 -= moveDown;
+        //                    room2.y2 -= moveDown;
+        //                    print("Update: " + room2.y1 + " " + room2.y2);
+        //                }
+        //                rooms[p] = room2;
+        //            }
+        //        }
+        //    }
+        //}
 
 
 
