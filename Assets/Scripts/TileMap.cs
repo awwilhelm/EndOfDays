@@ -129,7 +129,7 @@ public class TileMap : MonoBehaviour
 
             if(i != 0)
             {
-                int offsetPos = 100;
+                int offsetPos = 10000;
                 randX = Random.Range(-50, 50);
                 randY = Random.Range(-50, 50);
                 if(randX <= 0)
@@ -156,20 +156,8 @@ public class TileMap : MonoBehaviour
 
             Room tempRoom;
             int w, h;
-            //if (size_x - randX > 7 )
-            //{
-            //    w = Random.Range(2, 7);
-            //} else
-            //{
-               w = Random.Range(2, 7);
-            //}
-            //if (randY > 7)
-            //{
-            //    h = Random.Range(2, 7);
-            //} else
-            //{
-                h = Random.Range(2, 7);
-            //}
+            w = Random.Range(2, 7);
+            h = Random.Range(2, 7);
             
             
 
@@ -185,30 +173,57 @@ public class TileMap : MonoBehaviour
                         lowestIndex = j;
                         lowestVal = distance;
                     }
-                }
 
-                if (randX > rooms[lowestIndex].x1) // right
+                    distance = (int)Mathf.Sqrt(Mathf.Pow(Mathf.Abs(rooms[j].x2 - randX), 2) + Mathf.Pow(Mathf.Abs(rooms[j].y1 - randY), 2));
+                    if (distance < lowestVal)
+                    {
+                        lowestIndex = j;
+                        lowestVal = distance;
+                    }
+
+                    distance = (int)Mathf.Sqrt(Mathf.Pow(Mathf.Abs(rooms[j].x2 - randX), 2) + Mathf.Pow(Mathf.Abs(rooms[j].y2 - randY), 2));
+                    if (distance < lowestVal)
+                    {
+                        lowestIndex = j;
+                        lowestVal = distance;
+                    }
+
+                    distance = (int)Mathf.Sqrt(Mathf.Pow(Mathf.Abs(rooms[j].x1 - randX), 2) + Mathf.Pow(Mathf.Abs(rooms[j].y2 - randY), 2));
+                    if (distance < lowestVal)
+                    {
+                        lowestIndex = j;
+                        lowestVal = distance;
+                    }
+
+
+                }
+                
+                if (randX > rooms[lowestIndex].x1 && randY < (randX-rooms[lowestIndex].x2) +rooms[lowestIndex].y1 && randY < (randX - rooms[lowestIndex].x2) - (h +rooms[lowestIndex].y1)) // right
                 {
+                    int randPlacement = Random.Range(-h+1, h-1);
                     randX = rooms[lowestIndex].x2+1;
-                    randY = rooms[lowestIndex].y1;
+                    randY = rooms[lowestIndex].y1 + randPlacement;
                     print("right");
                 }
-                else if (randX < rooms[lowestIndex].x1) // left
+                else if (randX < rooms[lowestIndex].x1 && randY < (randX - rooms[lowestIndex].x2) + rooms[lowestIndex].y1 && randY < (randX - rooms[lowestIndex].x2) - (h + rooms[lowestIndex].y1)) // left
                 {
+                    int randPlacement = Random.Range(-h + 1, h - 1);
                     randX = rooms[lowestIndex].x1 - w - 1;
-                    randY = rooms[lowestIndex].y1;
+                    randY = rooms[lowestIndex].y1 + randPlacement;
                     print("left");
                 }
                 else if (randY > rooms[lowestIndex].y1) // up
                 {
-                    randX = rooms[lowestIndex].x1;
-                    randY = rooms[lowestIndex].y1 + h;
+                    int randPlacement = Random.Range(-w + 1, w - 1);
+                    randX = rooms[lowestIndex].x1 + randPlacement;
+                    randY = rooms[lowestIndex].y1 + h + 1;
                     print("up");
                 }
                 else if (randY < rooms[lowestIndex].y1) // down
                 {
-                    randX = rooms[lowestIndex].x1;
-                    randY = rooms[lowestIndex].y2;
+                    int randPlacement = Random.Range(-w + 1, w - 1);
+                    randX = rooms[lowestIndex].x1 + randPlacement;
+                    randY = rooms[lowestIndex].y2-1;
                     print("down");
                 }
             }
